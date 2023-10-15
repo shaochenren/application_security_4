@@ -1,0 +1,15 @@
+1. Distinction between Implicit and Explicit Intents.
+
+Explicit Intents precisely identify the component to be executed through setComponent or setClass without incorporating additional information or actions within the system. This means they can be invoked by external sources as well.
+
+Implicit Intents, on the other hand, do not designate a specific component but provide information for the system to determine the appropriate component to execute. Users can clearly see what is happening, and these intents are typically used for communication within the same application.
+
+2. Since Implicit Intents do not designate a specific component in Android, they may be launched from external sources, occasionally from unknown origins. These unknown sources might pose risks like intent spoofing and interception. Conversely, Explicit Intents have a designated component, commonly used for executing actions within the same application. Therefore, if we know which component to launch, using Explicit Intents is usually safer due to increased security.
+
+3. In SecondFragment.kt, the component is unspecified, and the intent.type is mapped to AndroidManifest.xml, corresponding to the ProductScrollingActivity activity, making it an Implicit Intent.
+
+4. In ThirdFragment.kt, the intent identifies the component to launch, which is ProductScrollingActivity, qualifying it as an Explicit Intent.
+
+5. It was observed that in SecondFragment.kt, the intent.type "text/giftcards_browse" can be found in AndroidManifest.xml, targeting the ProductScrollingActivity activity. Since this activity is already implemented within the app to manage the product page after login, calling the Implicit API is unnecessary. Therefore, using the Explicit Intent in ThirdFragment.kt is a more secure approach, as explained earlier.
+
+6. Modifications were made to SecondFragment.kt. Typically, after registration, users should be logged in. In SecondFragment.kt, intent.data was used to change the target from ProductScrollingActivity to an external API webpage, which was unintended. To fix the insecure intent, the intent code in SecondFragment.kt was modified to employ the Explicit approach, similar to ThirdFragment.kt, as justified in answer point 5.

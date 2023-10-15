@@ -1,0 +1,23 @@
+1. Vulnerability
+It was discovered that the original logic in the UserCard.kt code had a vulnerability,  where the backend API failed to verify if a card belonged to the current user who was logged in. 
+As a result, if an attacker had a valid account, they could use any card stored on the server, regardless of whether it belonged to them or not. For example, the attacker created an account with the username test222 and the password 123456. 
+If a victim had bought a card with an ID of 50, the attacker could use the following steps to use the victim's card without the victim being notified.
+Step 1: Login with curl
+
+curl -X POST http://appsec.moyix.net/api/login -d username=test222 -d password=123456
+
+We have our token which was used to identify unique user: 869a11639743db5e972b0d0be68ca0e21d0d28f1
+It was also noticed that for a user, the token of the user would never change, hence we could just make use of the token of the known user to perform our attack.
+
+Now we use the use card command:
+
+curl -X PUT -H "Authorization: Token 869a11639743db5e972b0d0be68ca0e21d0d28f1" http://appsec.moyix.net/api/use/50
+
+With this request, the card would be used without the notice of the victim. With these steps, we can use any unused card belongs to others without checking the card's owner but just have the giftcard number. Hence we just use the attacker's token to use the victim's card.
+
+2. How to fix
+
+To address this issue, the server needs to keep track of the ownership of each card, which could be done using a token or a user_id. 
+One possible modification on the server-side would be to check the user_id of the user who sent the PUT request to use a card against the user_id of the card. 
+If the user_id of the user who made the request did not match the user_id of the card, the server would reject the use of the card. On the other hand, if the user_id matched, the card could be used. 
+It is important to implement any fixes or ownership checks on the server-side and not the client-side, as an attacker could still bypass client-side authentication measures.
